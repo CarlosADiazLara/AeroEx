@@ -54,10 +54,10 @@ public class App {
     	
     	for(Pasajero pasajero : listaEsperaPasajerosVuelo1) {
     		
-    		if (pasajerosVuelo1.size() <= vuelo1.getNumeroPlazas()) {
+    		if (pasajerosVuelo1.size() < vuelo1.getNumeroPlazas()) {
     			pasajerosVuelo1.add(pasajero);
     		} else {
-    			System.out.println("El vuelo esta completo ya");
+    			System.out.println("El vuelo 1, a BARCELONA, esta completo ya, no admite mas pasajeros");
     		}
     	}
     	
