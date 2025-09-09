@@ -6,9 +6,9 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+
 
 public class App {
 	
@@ -54,126 +54,128 @@ public class App {
     	
     	
     	// Hay que recorrer la lista de espera e ir agregando un pasajero a la lista de pasajeros del vuelo 1
+    
     	
-    	for(Pasajero pasajero : listaEsperaPasajerosVuelo1) {
-    		
+    	listaEsperaPasajerosVuelo1.stream().forEach(pasajero -> {
     		if (pasajerosVuelo1.size() < vuelo1.getNumeroPlazas()) {
     			pasajerosVuelo1.add(pasajero);
     		} else {
     			System.out.println("El vuelo 1, a BARCELONA, esta completo ya, no admite mas pasajeros");
     		}
-    	}
+    	});
     	
-    	// En esta punto podemos agregar la lista de pasajeros al vuelo 1
     	vuelo1.setPasajeros(pasajerosVuelo1);
     	
-    	// vuelo 2 destino Valencia
     	
+    	/*Vuelo 2 a VALENCIA*/
     	Vuelo vuelo2 = Vuelo.builder()
     			.destino(Destino.VALENCIA)
-    			.precio(100).fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 10))
-    			.horaSalida(LocalTime.of(14, 10))
-    			.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 10))
-    			.horaLlegada(LocalTime.of(16, 0))
-    			.numeroPlazas(2)
+    			.precio(100.0)
+    			.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 12))
+    			.horaSalida(LocalTime.of(18, 10))
+    			.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 12))
+    			.horaLlegada(LocalTime.of(21, 0))
+    			.numeroPlazas(3)
     			.build();
-    	 // Crear la lista de pasajeros del vuelo 2 
-    	List<Pasajero>listaEsperaPasajerosVuelo2 = null;
     	
-    	// Añadir pasajeros
-    	Pasajero pasajero22 = new Pasajero ("Mauricio", "Mendez", "Da Corte", LocalDate.of(1993, Month.FEBRUARY, 3), Genero.HOMBRE);
+    	// Crear la lista de espera de pasajeros con destino a Valencia
     	
-    	Pasajero pasajero23 = new Pasajero("Ramon Eduardo", "Hernandez", "Mendoza", LocalDate.of(1989, Month.SEPTEMBER, 1), Genero.HOMBRE);
+    	List<Pasajero> listaEsperaPasajerosVuelo2 = null;
     	
-    	Pasajero pasajero24 = new Pasajero("Tahiel", "Soksz", "Andino", LocalDate.of(1990, Month.JULY, 5), Genero.HOMBRE);
+    	// Pasajero 1 de la lista de espera
     	
-    	// Añadir a la lista de pasajeros del vuelo 2
-    	listaEsperaPasajerosVuelo2 = Arrays.asList(pasajero22, pasajero23, pasajero24);
+    	Pasajero pasajero12 = new Pasajero("Alberto", "Diaz", "Lara", LocalDate.of(2000, Month.APRIL, 1), Genero.HOMBRE);
     	
-    	// crear la lista de pasajeros del vuelo 2
+    	// Pasajero 2 de la lista de espera
+    	
+    	Pasajero pasajero22 = new Pasajero("Junior", "Vega", "Monteds", LocalDate.of(2005, Month.SEPTEMBER, 1), Genero.HOMBRE);
+    	
+    	
+    	
+    	listaEsperaPasajerosVuelo2 = Arrays.asList(pasajero12, pasajero22);
+    	
+    	
+    	// Listado de pasajeros del vuelo 2
+    	
     	List<Pasajero> pasajerosVuelo2 = new ArrayList<Pasajero>();
     	
-    	// Recorrer la lista de pasajeros y enviar el mensaje
-    	for(Pasajero pasajero : listaEsperaPasajerosVuelo2) {
-    		
+    	
+    	// Hay que recorrer la lista de espera e ir agregando un pasajero a la lista de pasajeros del vuelo 1
+    
+    	
+    	listaEsperaPasajerosVuelo2.stream().forEach(pasajero -> {
     		if (pasajerosVuelo2.size() < vuelo2.getNumeroPlazas()) {
     			pasajerosVuelo2.add(pasajero);
     		} else {
-    			System.out.println("El vuelo 2, a VALENCIA, esta completo ya, no admite mas pasajeros");
+    			System.out.println("El vuelo 2, a Valencia, esta completo ya, no admite mas pasajeros");
     		}
-    	}
+    	});
     	
     	vuelo2.setPasajeros(pasajerosVuelo2);
     	
-    	// Vuelo 3 
+    	/*Vuelo 3 a PARIS*/
     	
     	Vuelo vuelo3 = Vuelo.builder()
     			.destino(Destino.PARIS)
-    			.precio(200).fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 11))
-    			.horaSalida(LocalTime.of(14, 10))
-    			.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 11))
-    			.horaLlegada(LocalTime.of(15, 40))
-    			.numeroPlazas(1)
+    			.precio(200.0)
+    			.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 13))
+    			.horaSalida(LocalTime.of(8, 10))
+    			.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 13))
+    			.horaLlegada(LocalTime.of(14, 0))
+    			.numeroPlazas(2)
     			.build();
-    	 
-    	// Crear la lista de pasajeros del vuelo 3 
-    	List<Pasajero>listaEsperaPasajerosVuelo3 = null;
+    	
+    	// Crear la lista de espera de pasajeros con destino a Paris
+    	
+    	List<Pasajero> listaEsperaPasajerosVuelo3 = null;
+    	
+    	// Pasajero 1 de la lista de espera
+    	
+    	Pasajero pasajero13 = new Pasajero("Roberta", "Diaz", "Lara", LocalDate.of(2000, Month.APRIL, 1), Genero.MUJER);
+    	
+    	// Pasajero 2 de la lista de espera
+    	
+    	Pasajero pasajero23 = new Pasajero("Juan", "Vega", "Montes", LocalDate.of(2005, Month.SEPTEMBER, 1), Genero.MUJER);
     	
     	
-    	// Añadir pasajeros
-    	Pasajero pasajero33 = new Pasajero ("Andres", "Rojas", "Diaz", LocalDate.of(1994, Month.JUNE, 7), Genero.HOMBRE);
     	
-    	Pasajero pasajero34 = new Pasajero("Luis Eduardo", "Quicios", "Juarez", LocalDate.of(1985, Month.SEPTEMBER, 1), Genero.HOMBRE);
+    	listaEsperaPasajerosVuelo3 = Arrays.asList(pasajero13, pasajero23);
     	
-    	Pasajero pasajero35 = new Pasajero("Pedro", "Torres", "Andrade", LocalDate.of(1982, Month.MAY, 10), Genero.HOMBRE);
     	
-    	// Añadir a la lista de pasajeros del vuelo 3
-    	listaEsperaPasajerosVuelo3 = Arrays.asList(pasajero33, pasajero34, pasajero35);
+    	// Listado de pasajeros del vuelo 3
     	
-    	// crear la lista de pasajeros del vuelo 2
     	List<Pasajero> pasajerosVuelo3 = new ArrayList<Pasajero>();
     	
-    	for(Pasajero pasajero : listaEsperaPasajerosVuelo3) {
-    		
+    	
+    	// Hay que recorrer la lista de espera e ir agregando un pasajero a la lista de pasajeros del vuelo 1
+    
+    	
+    	listaEsperaPasajerosVuelo3.stream().forEach(pasajero -> {
     		if (pasajerosVuelo3.size() < vuelo3.getNumeroPlazas()) {
     			pasajerosVuelo3.add(pasajero);
     		} else {
-    			System.out.println("El vuelo 3, a PARIS, esta completo ya, no admite mas pasajeros");
+    			System.out.println("El vuelo 3, a Paris, esta completo ya, no admite mas pasajeros");
     		}
-    	}
+    	});
     	
     	vuelo3.setPasajeros(pasajerosVuelo3);
     	
     	
+    	// Crear lista de vuelos a Destinos Diferentes
+    	
     	List<Vuelo> listadeVuelos = Arrays.asList(vuelo1, vuelo2, vuelo3);
     	
+    	// Primer punto del ejercicio
+    	// 1. Obtener un listado de los vuelos que tienen el número de plazas completo.
     	
-    	List<Vuelo> vuelosCompletos = listadeVuelos.stream().filter(vuelo -> vuelo.getPasajeros().size() == vuelo.getNumeroPlazas())
-    	.collect(Collectors.toList());
+    	List<Vuelo> vuelosCompletos = listadeVuelos.stream()
+    			.filter(vuelo -> vuelo.getPasajeros().size() == vuelo.getNumeroPlazas())
+    			.collect(Collectors.toList());
     	
-    	System.out.println("========================");
-    	System.out.println("Vuelos con plazas completas");
-    	System.out.println(vuelosCompletos);
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
+    	//Mostrar los vuelos completos
+    	System.out.println("vuelos completos");
+    	//vuelosCompletos.stream().forEach(vuelo -> System.out.println(vuelo));
+    	vuelosCompletos.stream().forEach(System.out::println);
     	
     	
     	
