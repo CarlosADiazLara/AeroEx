@@ -1,7 +1,10 @@
 package com.example;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -24,4 +27,22 @@ public class Vuelo {
 	private int numeroPlazas;
 	private List<Pasajero> pasajeros;
 
+	
+	
+	public long getDuration() {
+		return ChronoUnit.HOURS.between(LocalDateTime.of(fechaSalida, horaSalida), LocalDateTime.of(fechaLlegada, horaLlegada));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
