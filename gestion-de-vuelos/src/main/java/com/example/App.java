@@ -8,14 +8,11 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class App {
@@ -27,8 +24,8 @@ public class App {
 		/* Vuelo con destino a BARCELONA */
 
 		Vuelo vuelo1 = Vuelo.builder().destino(Destino.BARCELONA).precio(120.0)
-				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 21)).horaSalida(LocalTime.of(23, 00))
-				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 23)).horaLlegada(LocalTime.of(14, 00)).numeroPlazas(2)
+				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 15)).horaSalida(LocalTime.of(19, 10))
+				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 16)).horaLlegada(LocalTime.of(21, 0)).numeroPlazas(2)
 				.build();
 
 		// Crear la lista de espera de pasajeros con destino a BARCELONA
@@ -71,8 +68,8 @@ public class App {
 
 		/* Vuelo 2 a VALENCIA */
 		Vuelo vuelo2 = Vuelo.builder().destino(Destino.VALENCIA).precio(100.0)
-				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 12)).horaSalida(LocalTime.of(18, 10))
-				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 12)).horaLlegada(LocalTime.of(21, 0)).numeroPlazas(3)
+				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 17)).horaSalida(LocalTime.of(18, 10))
+				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 18)).horaLlegada(LocalTime.of(21, 0)).numeroPlazas(3)
 				.build();
 
 		// Crear la lista de espera de pasajeros con destino a Valencia
@@ -443,17 +440,6 @@ public class App {
 			System.out.println(pasajeroPorGeneroYEdadPt12);
 		}
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
 //		Optional<Vuelo> vueloMasLargo = listadeVuelos.stream().max(Comparator.comparing(Vuelo::getDuration));
 //
@@ -501,5 +487,56 @@ public class App {
 				.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
 						+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
 
-	}
-}
+
+
+		// Punto 14
+		// // Enviar un mensaje a los pasajeros cuyo vuelo saldrá en los próximos
+		// 3 dias.
+		
+System.out.println("========================================");
+System.out.println("Enviando mensajes a los pasajeros con vuelos en los próximos 3 dias...");
+System.out.println("Hora actual: " + ahora);
+
+//listadeVuelos.stream()
+//		// Corregimos la comparación uniendo la fecha y la hora del vuelo
+//		.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
+//				&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusDays(3)))
+//
+//		// Aplanamos la lista de pasajeros
+//		.flatMap(vuelo -> vuelo.getPasajeros().stream())
+//
+//		// Y finalmente 'enviamos' el mensaje
+//		.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
+//				+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
+
+//vuelosCompletos.stream().filter(v -> v.getFechaSalida().isEqual(LocalDate.now()) &&
+//		ChronoUnit.HOURS.between(v.getHoraSalida(), ahora)
+
+
+		//Punto 15
+		// Crear una colección que almacene el listado de pasajeros agrupado por el día en que tiene lugar su vuelo,
+		//considerando que el vuelo tiene lugar en el mes en curso. Al mostrar la colección resultante, mostrar 
+		//el nombre del día de la semana en español.
+
+System.out.println("==========================");
+System.out.println("Coleccion de pasajeros agrupado por dia de vuelo en el mes en curso");
+
+Map<LocalDate, List<Object>> pasajerosPorDiaVuelo;
+
+pasajerosPorDiaVuelo = listadeVuelos.stream()
+		.collect(Collectors.groupingBy(Vuelo::getFechaSalida,
+				Collectors.flatMapping(vuelo -> vuelo.getPasajeros().stream(),
+						Collectors.mapping(pasajero -> pasajero.nombre(),
+								Collectors.toList()))));
+
+System.out.println(pasajerosPorDiaVuelo);
+
+		//Punto 16
+		// Crear una colección de los vuelos que no están previstos para el mes en curso 
+		//y mostrar el nombre del mes para el cual está prevista su fecha de salida, en español.
+
+
+}}
+
+
+
