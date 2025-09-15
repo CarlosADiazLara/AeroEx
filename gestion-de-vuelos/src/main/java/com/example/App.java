@@ -8,9 +8,13 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -23,8 +27,8 @@ public class App {
 		/* Vuelo con destino a BARCELONA */
 
 		Vuelo vuelo1 = Vuelo.builder().destino(Destino.BARCELONA).precio(120.0)
-				.fechaSalida(LocalDate.of(2025, Month.OCTOBER, 21)).horaSalida(LocalTime.of(23, 00))
-				.fechaLlegada(LocalDate.of(2025, Month.OCTOBER, 23)).horaLlegada(LocalTime.of(14, 00)).numeroPlazas(2)
+				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 21)).horaSalida(LocalTime.of(23, 00))
+				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 23)).horaLlegada(LocalTime.of(14, 00)).numeroPlazas(2)
 				.build();
 
 		// Crear la lista de espera de pasajeros con destino a BARCELONA
@@ -220,115 +224,282 @@ public class App {
 		// destino del vuelo
 
 		Map<Destino, List<Pasajero>> pasajerosPorDestino;
-		
+
 		pasajerosPorDestino = listadeVuelos.stream().collect(Collectors.toMap(Vuelo::getDestino, Vuelo::getPasajeros));
-			    
+
 		System.out.println("===================");
 		System.out.println("Pasajeros agrupados por destino");
-		
+
 		pasajerosPorDestino.entrySet().forEach(entry -> {
 			System.out.println("Destino: " + entry.getKey());
-			
+
 			System.out.println("Pasajeros" + entry.getValue());
-			
-			
+
 		});
-		
-		
-		
+
 		// Punto 6
-		// Crear una colección que almacene los vuelos que están programados para 
-		//salir en los últimos 10 días del mes en curso. 
-		
+		// Crear una colección que almacene los vuelos que están programados para
+		// salir en los últimos 10 días del mes en curso.
+
 		List<Vuelo> vuelosUltimosDiasDelMes = listadeVuelos.stream()
-				.filter(vuelo -> vuelo.getFechaSalida().with(TemporalAdjusters.lastDayOfMonth())
-						.minusDays(10).isBefore(vuelo.getFechaSalida()) &&
-						vuelo.getFechaSalida().getMonth().equals(LocalDate.now().getMonth())).toList();
-		
+				.filter(vuelo -> vuelo.getFechaSalida().with(TemporalAdjusters.lastDayOfMonth()).minusDays(10).isBefore(
+						vuelo.getFechaSalida()) && vuelo.getFechaSalida().getMonth().equals(LocalDate.now().getMonth()))
+				.toList();
+
 		System.out.println("===============================");
 		System.out.println("Vuelos de los ultimos 10 dias del mes en curso");
 		vuelosUltimosDiasDelMes.stream().forEach(System.out::println);
-		
-		
-		
+
 		// Punto 7
-		
-		 //Crear una colección que almacene  los pasajeros, por el genero y la edad del pasajero
-		
-		Map<Genero,Map<Long, List<Pasajero>>> pasajerosPorGeneroYEdad;
-		
-		pasajerosPorGeneroYEdad = listadeVuelos.stream()
-				.flatMap(vuelo -> vuelo.getPasajeros().stream())
-				.collect(Collectors.groupingBy(pasajero -> pasajero.genero(), 
-						Collectors.groupingBy(pasajero -> ChronoUnit.YEARS.between(pasajero.fechaNacimiento(), 
-								LocalDate.now()), Collectors.toList())));
-		
-		System.out.println("========================");
-		System.out.println("Pasajeros por genero y edad");
+
+		// Crear una colección que almacene los pasajeros, por el genero y la edad del
+		// pasajero
+
+		Map<Genero, Map<Long, List<Pasajero>>> pasajerosPorGeneroYEdad;
+
+		pasajerosPorGeneroYEdad = listadeVuelos.stream().flatMap(vuelo -> vuelo.getPasajeros().stream())
+				.collect(Collectors.groupingBy(Pasajero::genero,
+						Collectors.groupingBy(
+								pasajero -> ChronoUnit.YEARS.between(pasajero.fechaNacimiento(), LocalDate.now()),
+								Collectors.toList())));
+
+		System.out.println("Solucion al punto 7");
 		pasajerosPorGeneroYEdad.entrySet().forEach(entry -> {
 			System.out.println("Genero: " + entry.getKey());
-			
-			System.out.println("Pasajero " + entry.getValue());
+			entry.getValue().entrySet().forEach(entry2 -> {
+				System.out.println("Edad: " + entry2.getKey());
+				System.out.println("Pasajeros: " + entry2.getValue());
+			});
 		});
-		
-		
+
+//		Map<Genero,Map<Long, List<Pasajero>>> pasajerosPorGeneroYEdad;
+//		
+//		pasajerosPorGeneroYEdad = listadeVuelos.stream()
+//				.flatMap(vuelo -> vuelo.getPasajeros().stream())
+//				.collect(Collectors.groupingBy(pasajero -> pasajero.genero(), 
+//						Collectors.groupingBy(pasajero -> ChronoUnit.YEARS.between(pasajero.fechaNacimiento(), 
+//								LocalDate.now()), Collectors.toList())));
+//		
+//		System.out.println("========================");
+//		System.out.println("Pasajeros por genero y edad");
+//		pasajerosPorGeneroYEdad.entrySet().forEach(entry -> {
+//			System.out.println("Genero: " + entry.getKey());
+//			
+//			System.out.println("Pasajero " + entry.getValue());
+//		});
+
 		// Punto 8
-		
-		// Mostrar la colección anterior ordenada por el nombre y los apellidos de los 
-		//pasajeros en orden natural. 
-		
-		
-		// 1. Aplanamos la lista de pasajeros de todos los vuelos.
-		List<Pasajero> allPasajeros = listadeVuelos.stream()
-		    .flatMap(vuelo -> vuelo.getPasajeros().stream())
-		    .collect(Collectors.toList());
 
-		// 2. Ordenamos la lista usando un Comparator para lograr el orden natural.
-		allPasajeros.sort(Comparator.comparing(Pasajero::primerApellido)
-		    .thenComparing(Pasajero::segundoApellido)
-		    .thenComparing(Pasajero::nombre));
+		// Mostrar la colección anterior ordenada por el nombre y los apellidos de los
+		// pasajeros en orden natural.
+		System.out.println("=======================");
+		System.out.println("Ordenados por orden Natural");
+		pasajerosPorGeneroYEdad.entrySet().forEach(entry -> {
+			System.out.println("Del genero: " + entry.getKey());
+			Map<Long, List<Pasajero>> pasajerosPorEdad = entry.getValue();
+			pasajerosPorEdad.entrySet().forEach(entry2 -> {
+				System.out.println("Edad:" + entry2.getKey());
+				entry2.getValue().stream().sorted().forEach(System.out::println);
+			});
+		});
 
-		// 3. Imprimimos la lista ordenada.
-		System.out.println("========================");
-		System.out.println("Pasajeros ordenados por nombre y apellidos (orden natural):");
-		allPasajeros.forEach(pasajero ->
-		    System.out.println(pasajero.primerApellido() + " " + pasajero.segundoApellido() + ", " + pasajero.nombre())
-		);
-		
-		
-		// Punto 9 
-		
-		// Mostrar la colección del punto 7 ordenada en orden alfabético inverso por el 
-		//primer apellido, sin modificar el orden natural de la clase Pasajero. 
-		
-		// 1. Aplanamos la lista de todos los pasajeros de todos los vuelos.
-		List<Pasajero> pasajerosOrdenInverso = listadeVuelos.stream()
-		    .flatMap(vuelo -> vuelo.getPasajeros().stream())
-		    .collect(Collectors.toList());
+		// Esto repite pasajeros porque una coleccion ( List ) admite pasajeros
+		// duplicados
+//		List<Pasajero> todosLosPasajeros = pasajerosPorGeneroYEdad.values().stream()
+//				.flatMap(mapaEdad -> mapaEdad.values().stream()).flatMap(List::stream).collect(Collectors.toList());
+//
+//		// 2. Ordenamos la lista aplanada usando el orden natural de la clase Pasajero
+//		// (el que definiste con el método compareTo).
+//		todosLosPasajeros.sort(Comparator.naturalOrder());
+		// Collections.sort(todoslosPasajeros);
+//		// O de forma más concisa:
+//		// todosLosPasajeros.sort(null);
+//
+//		// 3. Imprimimos los nombres y apellidos de los pasajeros ya ordenados
+//		System.out.println("========================");
+//		System.out.println("Pasajeros ordenados por orden natural (apellido, nombre):");
+//		todosLosPasajeros.forEach(pasajero -> System.out
+//				.println(pasajero.primerApellido() + " " + pasajero.segundoApellido() + ", " + pasajero.nombre()));
 
-		// 2. Ordenamos la lista de pasajeros por el primer apellido en orden inverso.
-		allPasajeros.sort(Comparator.comparing(Pasajero::primerApellido).reversed());
+		// Punto 9
 
-		// 3. Imprimimos la lista ordenada.
-		System.out.println("========================");
-		System.out.println("Pasajeros ordenados por primer apellido (orden inverso):");
-		pasajerosOrdenInverso.forEach(pasajero ->
-		    System.out.println(pasajero.primerApellido() + " " + pasajero.segundoApellido() + ", " + pasajero.nombre())
-		);
-		
-		
+		// Mostrar la colección del punto 7 ordenada en orden alfabético inverso por el
+		// primer apellido, sin modificar el orden natural del record Pasajero.
+
+		System.out.println("=======================");
+		System.out.println("Ordenados por orden inverso");
+		pasajerosPorGeneroYEdad.entrySet().forEach(entry -> {
+			System.out.println("Del genero: " + entry.getKey());
+			Map<Long, List<Pasajero>> pasajerosPorEdad = entry.getValue();
+			pasajerosPorEdad.entrySet().forEach(entry2 -> {
+				System.out.println("Edad:" + entry2.getKey());
+				entry2.getValue().stream().sorted(Comparator.comparing(Pasajero::primerApellido).reversed())
+						.forEach(System.out::println);
+			});
+		});
+
+		// 1. Aplanamos el mapa anidado en una única lista de pasajeros.
+//		List<Pasajero> todosLosPasajeros2 = pasajerosPorGeneroYEdad.values().stream()
+//				.flatMap(mapaEdad -> mapaEdad.values().stream()).flatMap(List::stream).collect(Collectors.toList());
+//
+//		// 2. Ordenamos la lista aplanada usando un Comparator externo.
+//		// Este Comparator ordena por el primer apellido y luego invierte el resultado.
+//		todosLosPasajeros2.sort(Comparator.comparing(Pasajero::primerApellido).reversed());
+//
+//		// 3. Imprimimos los nombres y apellidos de los pasajeros ya ordenados.
+//		System.out.println("========================");
+//		System.out.println("Pasajeros ordenados por primer apellido (orden inverso):");
+//		todosLosPasajeros2.forEach(pasajero -> System.out
+//				.println(pasajero.primerApellido() + " " + pasajero.segundoApellido() + ", " + pasajero.nombre()));
+
 		// Punto 10
+
+		// Obtener una colección que almacene el nombre y el apellido de los
+		// pasajeros, agrupado por las horas de duración de su viaje.
+
+		// Generamos el mapa agrupando pasajeros por la duración del vuelo.
+		System.out.println("==========================");
+		System.out.println("Listado de Nombres y Apellidos por duracion del viaje");
+		Map<Long, List<String>> nombreYApellidoPorDuracionDelViaje;
+
+		nombreYApellidoPorDuracionDelViaje = listadeVuelos.stream()
+				.collect(Collectors.groupingBy(Vuelo::getDuration,
+						Collectors.flatMapping(vuelo -> vuelo.getPasajeros().stream(),
+								Collectors.mapping(pasajero -> pasajero.nombre() + " " + pasajero.primerApellido(),
+										Collectors.toList()))));
+
+		System.out.println(nombreYApellidoPorDuracionDelViaje);
+
+//		Map<Long, List<Pasajero>> pasajerosAgrupadosPorDuracion = listadeVuelos.stream()
+//				// 1. Aplanamos la lista de vuelos en un flujo de pares clave-valor
+//				.flatMap(vuelo -> vuelo.getPasajeros().stream()
+//						.map(pasajero -> Map.entry(vuelo.getDuration(), pasajero)))
+//				// 2. Recolectamos el flujo en un mapa usando el colector groupingBy.
+//				.collect(Collectors.groupingBy(Map.Entry::getKey,
+//						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+//
+//		// Imprimimos el resultado para verificar.
+//		System.out.println("Mapa de pasajeros agrupados por duración del viaje (en horas):");
+//		pasajerosAgrupadosPorDuracion.forEach((horas, pasajeros) -> {
+//			System.out.println("==============================");
+//			System.out.println("Duración del viaje: " + horas + " horas.");
+//			pasajeros.forEach(
+//					pasajero -> System.out.println("  - " + pasajero.nombre() + " " + pasajero.primerApellido()));
+//		});
+
+		// Punto 11
+
+		// Mostrar el listado de pasajeros ordenado de mayor a menor por la duración
+		// del viaje.
+
+		Map<Long, List<String>> nombreYApellidoPorDuracionDelViajeOrdenado;
+		nombreYApellidoPorDuracionDelViajeOrdenado = new TreeMap<>(Comparator.reverseOrder());
+
+		nombreYApellidoPorDuracionDelViajeOrdenado.putAll(nombreYApellidoPorDuracionDelViaje);
+
+		System.out.println("=====================");
+		System.out.println("Lista ordenada de mayor a menor por la duracion del viaje");
+		System.out.println(nombreYApellidoPorDuracionDelViajeOrdenado);
+
+//		List<Map.Entry<Long, Pasajero>> pasajerosPorDuracion = listadeVuelos.stream()
+//				// 1. Aplanamos la lista de vuelos en un flujo de pasajeros
+//				// y creamos una entrada de mapa (duracion -> pasajero) para cada uno
+//				.flatMap(vuelo -> vuelo.getPasajeros().stream()
+//						.map(pasajero -> Map.entry(vuelo.getDuration(), pasajero)))
+//				// 2. Ordenamos el flujo de entradas de mapa por la clave (la duración)
+//				// en orden inverso (mayor a menor)
+//				.sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+//				// 3. Recolectamos el resultado en una nueva lista
+//				.collect(Collectors.toList());
+//
+//		// Imprimimos la lista ordenada
+//		System.out.println("========================");
+//		System.out.println("Pasajeros ordenados de mayor a menor duración de viaje:");
+//		pasajerosPorDuracion.forEach(entry -> {
+//			System.out.println("Duración: " + entry.getKey() + " horas - Pasajero: " + entry.getValue().primerApellido()
+//					+ " " + entry.getValue().nombre());
+//		});
+
+		// Punto 12
+		// Recuperar el vuelo que tiene la máxima duración y mostrar sus pasajeros
+		// agrupados por género y edad del pasajero
+		System.out.println("vuelo de maxima duracion");
+		Optional<Vuelo> vueloMaxDuracionOpt = listadeVuelos.stream()
+				.max((v1, v2) -> Long.valueOf(v1.getDuration())
+						.compareTo(Long.valueOf(v2.getDuration())));
 		
-		//Obtener una colección que almacene el nombre y el apellido de los 
-		//pasajeros, agrupado por las horas de duración de su viaje. 
+		if (vueloMaxDuracionOpt.isPresent()) {
+			final Vuelo vueloMaxDuracion = vueloMaxDuracionOpt.get();
+			System.out.println(vueloMaxDuracion);
+			
+			Map<Genero, Map<Long, List<Pasajero>>> pasajeroPorGeneroYEdadPt12 = 
+					listadeVuelos.stream().filter(vuelo -> vuelo.equals(vueloMaxDuracion))
+					.flatMap(v -> v.getPasajeros().stream())
+					.collect(Collectors.groupingBy(Pasajero::genero,
+							Collectors.groupingBy(p -> ChronoUnit.YEARS.between(p.fechaNacimiento(), 
+									LocalDate.now()), Collectors.toList())));
+			System.out.println("============");
+			System.out.println("Respuesta al pt 12");
+			System.out.println(pasajeroPorGeneroYEdadPt12);
+		}
+
 		
 		
 		
-	
 		
 		
 		
 		
 		
+		
+		
+		
+
+//		Optional<Vuelo> vueloMasLargo = listadeVuelos.stream().max(Comparator.comparing(Vuelo::getDuration));
+//
+//		// Paso 2: Si el vuelo existe, obtenemos sus pasajeros y los agrupamos
+//		vueloMasLargo.ifPresent(vuelo -> {
+//			Map<Genero, Map<Long, List<Pasajero>>> pasajerosAgrupados = vuelo.getPasajeros().stream()
+//					.collect(Collectors.groupingBy(Pasajero::genero,
+//							Collectors.groupingBy(
+//									pasajero -> ChronoUnit.YEARS.between(pasajero.fechaNacimiento(), LocalDate.now()),
+//									Collectors.toList())));
+//
+//			// Mostramos el resultado
+//			System.out.println("========================================");
+//			System.out.println("Pasajeros del vuelo con duración máxima (" + vuelo.getDuration() + " horas):");
+//			pasajerosAgrupados.entrySet().forEach(entry -> {
+//				System.out.println("  - Género: " + entry.getKey());
+//				entry.getValue().entrySet().forEach(entry2 -> {
+//					System.out.println("    > Edad: " + entry2.getKey());
+//					System.out.println("      Pasajeros: " + entry2.getValue().stream()
+//							.map(p -> p.nombre() + " " + p.primerApellido()).collect(Collectors.joining(", ")));
+//				});
+//			});
+//		});
+
+		// Punto 13
+		// Enviar un mensaje a los pasajeros cuyo vuelo saldrá en las próximas
+		// 3 horas.
+
+		// Capturamos el momento actual para la comparación
+		LocalDateTime ahora = LocalDateTime.now();
+
+		System.out.println("========================================");
+		System.out.println("Enviando mensajes a los pasajeros con vuelos en las próximas 3 horas...");
+		System.out.println("Hora actual: " + ahora);
+
+		listadeVuelos.stream()
+				// Corregimos la comparación uniendo la fecha y la hora del vuelo
+				.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
+						&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusHours(3)))
+
+				// Aplanamos la lista de pasajeros
+				.flatMap(vuelo -> vuelo.getPasajeros().stream())
+
+				// Y finalmente 'enviamos' el mensaje
+				.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
+						+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
+
 	}
 }
