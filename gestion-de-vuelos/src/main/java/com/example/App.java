@@ -71,7 +71,7 @@ public class App {
 
 		/* Vuelo 2 a VALENCIA */
 		Vuelo vuelo2 = Vuelo.builder().destino(Destino.VALENCIA).precio(100.0)
-				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 17)).horaSalida(LocalTime.of(18, 10))
+				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 16)).horaSalida(LocalTime.of(18, 10))
 				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 18)).horaLlegada(LocalTime.of(21, 0)).numeroPlazas(3)
 				.build();
 
@@ -151,6 +151,12 @@ public class App {
 
 		List<Vuelo> listadeVuelos = Arrays.asList(vuelo1, vuelo2, vuelo3);
 
+
+		Locale espaniol = Locale.of("es", "ES");
+		LocalDate hoy = LocalDate.now();
+		Month mesActual = hoy.getMonth();
+		int anioActual = hoy.getYear();
+		
 		// Primer punto del ejercicio
 		// 1. Obtener un listado de los vuelos que tienen el número de plazas completo.
 
@@ -167,16 +173,41 @@ public class App {
 		// 2. Obtener un listado de los vuelos que tienen fecha de salida prevista para
 		// el
 		// día de hoy.
-		List<Vuelo> vuelosDeHoy = listadeVuelos.stream()
-				.filter(vuelo -> vuelo.getFechaSalida().isEqual(LocalDate.now())).toList();
-
+				
 		System.out.println("=============");
 		System.out.println("Vuelos de hoy");
-		vuelosDeHoy.stream().forEach(System.out::println);
 
+		List<Vuelo> vuelosDeHoy = listadeVuelos.stream()
+				.filter(vuelo -> vuelo.getFechaSalida().isEqual(LocalDate.now())).toList();
+		vuelosDeHoy.stream().forEach(System.out::println);
+		
+		
+		// Punto al margen 1. Mostrar destinos, separados por coma
+		System.out.println("=============");
+		System.out.println("Destinos separados por coma");
+		String destinos = vuelosDeHoy.stream()
+				.map(v -> v.getDestino().toString())
+				.collect(Collectors.joining(", "));
+		System.out.println(destinos);
+
+		
+		// Punto  al margen 2. Lista de destinos de cada vuelo que cumple la condicion de salida en el dia de hoy
+		System.out.println("=============");
+		System.out.println("Destinos para los que se sale hoy");
+		
+		List<Destino> destinosHoy = listadeVuelos.stream()
+				.filter(v -> v.getFechaSalida().isEqual(hoy))
+				.map(Vuelo::getDestino)
+				.toList();
+		
+		System.out.println(destinosHoy);
+		
 		// Punto 3
 		// Obtener un listado de los vuelos cuya duración sea mayor de 10 horas.
 
+		System.out.println("=========================");
+		System.out.println("Vuelos de mas de 10 horas");
+		
 //    	List<Vuelo> vuelosDeLargaDuracion = listadeVuelos.stream()
 //    		    .filter(vuelo -> {
 //    		        Duration duracion = Duration.between(vuelo.getHoraSalida(), vuelo.getHoraLlegada()).plusDays(
@@ -200,10 +231,11 @@ public class App {
 						LocalDateTime.of(vuelo.getFechaLlegada(), vuelo.getHoraLlegada())) > 10)
 				.collect(Collectors.toList());
 
-		System.out.println("=========================");
-		System.out.println("Vuelos de mas de 10 horas");
+		
 		vuelosLargaDuracion.stream().forEach(System.out::println);
 
+
+		
 		// Punto 4
 		// Obtener un listado de los vuelos que pueden demorar más de un día en llegar
 		// a su destino.
@@ -299,6 +331,7 @@ public class App {
 		// pasajeros en orden natural.
 		System.out.println("=======================");
 		System.out.println("Ordenados por orden Natural");
+		
 		pasajerosPorGeneroYEdad.entrySet().forEach(entry -> {
 			System.out.println("Del genero: " + entry.getKey());
 			Map<Long, List<Pasajero>> pasajerosPorEdad = entry.getValue();
@@ -308,31 +341,26 @@ public class App {
 			});
 		});
 
-		// Esto repite pasajeros porque una coleccion ( List ) admite pasajeros
-		// duplicados
-//		List<Pasajero> todosLosPasajeros = pasajerosPorGeneroYEdad.values().stream()
-//				.flatMap(mapaEdad -> mapaEdad.values().stream()).flatMap(List::stream).collect(Collectors.toList());
-//
-//		// 2. Ordenamos la lista aplanada usando el orden natural de la clase Pasajero
-//		// (el que definiste con el método compareTo).
-//		todosLosPasajeros.sort(Comparator.naturalOrder());
-		// Collections.sort(todoslosPasajeros);
-//		// O de forma más concisa:
-//		// todosLosPasajeros.sort(null);
-//
-//		// 3. Imprimimos los nombres y apellidos de los pasajeros ya ordenados
-//		System.out.println("========================");
-//		System.out.println("Pasajeros ordenados por orden natural (apellido, nombre):");
-//		todosLosPasajeros.forEach(pasajero -> System.out
-//				.println(pasajero.primerApellido() + " " + pasajero.segundoApellido() + ", " + pasajero.nombre()));
 
+		// Punto al margen 3. Ordenar la clave Genero del mapa anterior en orden alfabetico inverso
+		System.out.println("=======================");
+		System.out.println("Genero ordenado pro alfabetico inverso");
+		
+		Map<Genero, Map<Long, List<Pasajero>>> pasajeroPorGeneroYEdadOrdenado = new TreeMap<>(Comparator
+				.comparing(Genero::toString)
+				.reversed());
+		
+		pasajeroPorGeneroYEdadOrdenado.putAll(pasajerosPorGeneroYEdad);
+		
+		System.out.println(pasajeroPorGeneroYEdadOrdenado);
+		
 		// Punto 9
 
 		// Mostrar la colección del punto 7 ordenada en orden alfabético inverso por el
 		// primer apellido, sin modificar el orden natural del record Pasajero.
 
 		System.out.println("=======================");
-		System.out.println("Ordenados por orden inverso");
+		System.out.println("Ordenados apellido por orden inverso");
 		pasajerosPorGeneroYEdad.entrySet().forEach(entry -> {
 			System.out.println("Del genero: " + entry.getKey());
 			Map<Long, List<Pasajero>> pasajerosPorEdad = entry.getValue();
@@ -536,10 +564,6 @@ public class App {
 		System.out.println("==========================");
 		System.out.println("Coleccion de pasajeros agrupado por dia de vuelo en el mes en curso");
 
-		Locale espaniol = Locale.of("es", "ES");
-		LocalDate hoy = LocalDate.now();
-		Month mesActual = hoy.getMonth();
-		int anioActual = hoy.getYear();
 
 //		Map<DayOfWeek, List<Pasajero>> pasajerosPorDia;
 //
@@ -596,13 +620,12 @@ public class App {
 			vuelos.forEach(vuelo -> System.out.println("Vuelos con destino a: " + vuelo.getDestino()));
 		});
 
-		// Por que no????
 //				vuelosPorMes.entrySet().forEach(entry -> {
 //				System.out.println("Viaje del mes: " + entry.getKey().getDisplayName(TextStyle.FULL, espaniol)
 //						+ " ");
 //				entry.getValue().stream().forEach(System.out::println);
 //				});
-//			
-//				System.out.println("El programa ha finalizado");
+		
+				System.out.println("El programa ha finalizado");
 	}
 }
