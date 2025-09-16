@@ -1,15 +1,18 @@
 package com.example;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -24,8 +27,8 @@ public class App {
 		/* Vuelo con destino a BARCELONA */
 
 		Vuelo vuelo1 = Vuelo.builder().destino(Destino.BARCELONA).precio(120.0)
-				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 15)).horaSalida(LocalTime.of(19, 10))
-				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 16)).horaLlegada(LocalTime.of(21, 0)).numeroPlazas(2)
+				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 16)).horaSalida(LocalTime.of(14, 10))
+				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 17)).horaLlegada(LocalTime.of(20, 0)).numeroPlazas(2)
 				.build();
 
 		// Crear la lista de espera de pasajeros con destino a BARCELONA
@@ -108,8 +111,8 @@ public class App {
 		/* Vuelo 3 a PARIS */
 
 		Vuelo vuelo3 = Vuelo.builder().destino(Destino.PARIS).precio(200.0)
-				.fechaSalida(LocalDate.of(2025, Month.SEPTEMBER, 13)).horaSalida(LocalTime.of(8, 10))
-				.fechaLlegada(LocalDate.of(2025, Month.SEPTEMBER, 13)).horaLlegada(LocalTime.of(14, 0)).numeroPlazas(2)
+				.fechaSalida(LocalDate.of(2025, Month.OCTOBER, 13)).horaSalida(LocalTime.of(8, 10))
+				.fechaLlegada(LocalDate.of(2025, Month.OCTOBER, 13)).horaLlegada(LocalTime.of(14, 0)).numeroPlazas(2)
 				.build();
 
 		// Crear la lista de espera de pasajeros con destino a Paris
@@ -155,7 +158,8 @@ public class App {
 				.filter(vuelo -> vuelo.getPasajeros().size() == vuelo.getNumeroPlazas()).collect(Collectors.toList());
 
 		// Mostrar los vuelos completos
-		System.out.println("vuelos completos");
+		System.out.println("================");
+		System.out.println("Vuelos completos");
 		// vuelosCompletos.stream().forEach(vuelo -> System.out.println(vuelo));
 		vuelosCompletos.stream().forEach(System.out::println);
 
@@ -166,7 +170,8 @@ public class App {
 		List<Vuelo> vuelosDeHoy = listadeVuelos.stream()
 				.filter(vuelo -> vuelo.getFechaSalida().isEqual(LocalDate.now())).toList();
 
-		System.out.println("vuelos de hoy");
+		System.out.println("=============");
+		System.out.println("Vuelos de hoy");
 		vuelosDeHoy.stream().forEach(System.out::println);
 
 		// Punto 3
@@ -195,6 +200,7 @@ public class App {
 						LocalDateTime.of(vuelo.getFechaLlegada(), vuelo.getHoraLlegada())) > 10)
 				.collect(Collectors.toList());
 
+		System.out.println("=========================");
 		System.out.println("Vuelos de mas de 10 horas");
 		vuelosLargaDuracion.stream().forEach(System.out::println);
 
@@ -213,7 +219,9 @@ public class App {
 
 		List<Vuelo> vuelosDeMasDeUnDia = listadeVuelos.stream().filter(vuelo -> vuelo.getDuration() > 24)
 				.collect(Collectors.toList());
-		System.out.println("Vuelos de mas de un dia");
+		
+		System.out.println("======================");
+		System.out.println("Vuelos de mas de 1 dia");
 		vuelosDeMasDeUnDia.stream().forEach(System.out::println);
 
 		// Punto 5
@@ -422,24 +430,20 @@ public class App {
 		// agrupados por género y edad del pasajero
 		System.out.println("vuelo de maxima duracion");
 		Optional<Vuelo> vueloMaxDuracionOpt = listadeVuelos.stream()
-				.max((v1, v2) -> Long.valueOf(v1.getDuration())
-						.compareTo(Long.valueOf(v2.getDuration())));
-		
+				.max((v1, v2) -> Long.valueOf(v1.getDuration()).compareTo(Long.valueOf(v2.getDuration())));
+
 		if (vueloMaxDuracionOpt.isPresent()) {
 			final Vuelo vueloMaxDuracion = vueloMaxDuracionOpt.get();
 			System.out.println(vueloMaxDuracion);
-			
-			Map<Genero, Map<Long, List<Pasajero>>> pasajeroPorGeneroYEdadPt12 = 
-					listadeVuelos.stream().filter(vuelo -> vuelo.equals(vueloMaxDuracion))
-					.flatMap(v -> v.getPasajeros().stream())
-					.collect(Collectors.groupingBy(Pasajero::genero,
-							Collectors.groupingBy(p -> ChronoUnit.YEARS.between(p.fechaNacimiento(), 
-									LocalDate.now()), Collectors.toList())));
+
+			Map<Genero, Map<Long, List<Pasajero>>> pasajeroPorGeneroYEdadPt12 = listadeVuelos.stream()
+					.filter(vuelo -> vuelo.equals(vueloMaxDuracion)).flatMap(v -> v.getPasajeros().stream())
+					.collect(Collectors.groupingBy(Pasajero::genero, Collectors.groupingBy(
+							p -> ChronoUnit.YEARS.between(p.fechaNacimiento(), LocalDate.now()), Collectors.toList())));
 			System.out.println("============");
 			System.out.println("Respuesta al pt 12");
 			System.out.println(pasajeroPorGeneroYEdadPt12);
 		}
-
 
 //		Optional<Vuelo> vueloMasLargo = listadeVuelos.stream().max(Comparator.comparing(Vuelo::getDuration));
 //
@@ -479,8 +483,10 @@ public class App {
 				// Corregimos la comparación uniendo la fecha y la hora del vuelo
 				.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
 						&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusHours(3)))
-				.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino())) //Depurar codigo y poner resultados entre medias
-				
+				.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino())) // Depurar codigo y poner
+																								// resultados entre
+																								// medias
+
 				// Aplanamos la lista de pasajeros
 				.flatMap(vuelo -> vuelo.getPasajeros().stream())
 
@@ -488,54 +494,115 @@ public class App {
 				.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
 						+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
 
-
-
 		// Punto 14
 		// // Enviar un mensaje a los pasajeros cuyo vuelo saldrá en los próximos
 		// 3 dias.
+
+		System.out.println("========================================");
+		System.out.println("Enviando mensajes a los pasajeros con vuelos en los próximos 3 dias...");
+		System.out.println("Hora actual: " + ahora);
+
+//listadeVuelos.stream()
+//		// Corregimos la comparación uniendo la fecha y la hora del vuelo
+//		.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
+//				&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusDays(3)))
+//		.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino()))
+//		
+//		// Aplanamos la lista de pasajeros    
+//		.flatMap(vuelo -> vuelo.getPasajeros().stream())
+//
+//		// Y finalmente 'enviamos' el mensaje
+//		.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
+//				+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
+
+// Solucion de Tahiel
+		listadeVuelos.stream().filter(
+				v -> (v.getFechaSalida().isEqual(LocalDate.now()) || v.getFechaSalida().isAfter(LocalDate.now()))
+						&& v.getFechaSalida().isBefore(LocalDate.now().plusDays(3)))
+				.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino()))
+				.flatMap(vuelo -> vuelo.getPasajeros().stream())
+
+				.forEach(pasajero -> System.out
+						.println("Mensaje enviado a " + pasajero.nombre() + " " + pasajero.primerApellido()
+								+ ": Su vuelo está programado para salir en los próximos dias. ¡Prepárese!"));
+
+		// Punto 15
+		// Crear una colección que almacene el listado de pasajeros agrupado por el día
+		// en que tiene lugar su vuelo,
+		// considerando que el vuelo tiene lugar en el mes en curso. Al mostrar la
+		// colección resultante, mostrar
+		// el nombre del día de la semana en español.
+
+		System.out.println("==========================");
+		System.out.println("Coleccion de pasajeros agrupado por dia de vuelo en el mes en curso");
+
+		Locale espaniol = Locale.of("es", "ES");
+		LocalDate hoy = LocalDate.now();
+		Month mesActual = hoy.getMonth();
+		int anioActual = hoy.getYear();
+
+//		Map<DayOfWeek, List<Pasajero>> pasajerosPorDia;
+//
+//		pasajerosPorDia = listadeVuelos.stream()
+//				.filter(vuelo -> vuelo.getFechaSalida().getMonth() == mesActual
+//						&& vuelo.getFechaSalida().getYear() == anioActual)
+//
+//				// Aplanamos la lista de pasajeros
+//				.flatMap(v -> v.getPasajeros().stream().map(p -> Map.entry(v.getFechaSalida().getDayOfWeek(), p)))
+//
+//				// Agrupamos por dia de la semana
+//				.collect(Collectors.groupingBy(Map.Entry::getKey,
+//						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+//
+//		pasajerosPorDia.forEach((dia, pasajeros) -> {
+//			String diaEnEspaniol = dia.getDisplayName(TextStyle.FULL, espaniol);
+//			System.out.println(diaEnEspaniol);
+//			pasajeros.forEach(p -> System.out.println(p.nombre()));
+//		});
+
+//			Map<LocalDate, List<Pasajero>> pasajerosPorDia = listadeVuelos.stream()
+//					.filter(v -> v.getFechaSalida().getMonth().equals(mesActual))
+//					.collect(Collectors.groupingBy(Vuelo::getFechaSalida,
+//							Collectors.flatMapping(v -> v.getPasajeros().stream(), 
+//									Collectors.toList())));
+
+		Map<DayOfWeek, List<Pasajero>> pasajerosPorDia = listadeVuelos.stream()
+				.filter(v -> v.getFechaSalida().getMonth().equals(mesActual))
+				.collect(Collectors.groupingBy(v -> v.getFechaSalida().getDayOfWeek(),
+						Collectors.flatMapping(v -> v.getPasajeros().stream(), 
+								Collectors.toList())));
 		
-System.out.println("========================================");
-System.out.println("Enviando mensajes a los pasajeros con vuelos en los próximos 3 dias...");
-System.out.println("Hora actual: " + ahora);
+			pasajerosPorDia.entrySet().forEach(entry -> {
+			System.out.println("Viaje del dia: " + entry.getKey().getDisplayName(TextStyle.FULL, espaniol)
+					+ " ");
+			entry.getValue().stream().forEach(System.out::println);
+			});
 
-listadeVuelos.stream()
-		// Corregimos la comparación uniendo la fecha y la hora del vuelo
-		.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
-				&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusDays(3)))
-		.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino()))
-		
-		// Aplanamos la lista de pasajeros    
-		.flatMap(vuelo -> vuelo.getPasajeros().stream())
+		// Punto 16
+		// Crear una colección de los vuelos que no están previstos para el mes en curso
+		// y mostrar el nombre del mes para el cual está prevista su fecha de salida, en
+		// español.
 
-		// Y finalmente 'enviamos' el mensaje
-		.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
-				+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
+		System.out.println("==========================");
+		System.out.println("Coleccion de vuelos agrupados por mes de salida");
 
+		Map<Month, List<Vuelo>> vuelosPorMes = listadeVuelos.stream()
+				.filter(v -> !v.getFechaSalida().getMonth().equals(mesActual))
+				.collect(Collectors.groupingBy(v -> v.getFechaSalida().getMonth()));
 
-		//Punto 15
-		// Crear una colección que almacene el listado de pasajeros agrupado por el día en que tiene lugar su vuelo,
-		//considerando que el vuelo tiene lugar en el mes en curso. Al mostrar la colección resultante, mostrar 
-		//el nombre del día de la semana en español.
+		vuelosPorMes.forEach((mes, vuelos) -> {
+			// Convierte el objeto Month a su nombre en español al imprimir
+			System.out.println("Mes: " + mes.getDisplayName(TextStyle.FULL, espaniol));
+			vuelos.forEach(vuelo -> System.out.println("Vuelos con destino a: " + vuelo.getDestino()));
+		});
 
-System.out.println("==========================");
-System.out.println("Coleccion de pasajeros agrupado por dia de vuelo en el mes en curso");
-
-Map<LocalDate, List<Object>> pasajerosPorDiaVuelo;
-
-pasajerosPorDiaVuelo = listadeVuelos.stream()
-		.collect(Collectors.groupingBy(Vuelo::getFechaSalida,
-				Collectors.flatMapping(vuelo -> vuelo.getPasajeros().stream(),
-						Collectors.mapping(pasajero -> pasajero.nombre(),
-								Collectors.toList()))));
-
-System.out.println(pasajerosPorDiaVuelo);
-
-		//Punto 16
-		// Crear una colección de los vuelos que no están previstos para el mes en curso 
-		//y mostrar el nombre del mes para el cual está prevista su fecha de salida, en español.
-
-
-}}
-
-
-
+		// Por que no????
+//				vuelosPorMes.entrySet().forEach(entry -> {
+//				System.out.println("Viaje del mes: " + entry.getKey().getDisplayName(TextStyle.FULL, espaniol)
+//						+ " ");
+//				entry.getValue().stream().forEach(System.out::println);
+//				});
+//			
+//				System.out.println("El programa ha finalizado");
+	}
+}
