@@ -479,7 +479,8 @@ public class App {
 				// Corregimos la comparación uniendo la fecha y la hora del vuelo
 				.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
 						&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusHours(3)))
-
+				.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino())) //Depurar codigo y poner resultados entre medias
+				
 				// Aplanamos la lista de pasajeros
 				.flatMap(vuelo -> vuelo.getPasajeros().stream())
 
@@ -497,20 +498,18 @@ System.out.println("========================================");
 System.out.println("Enviando mensajes a los pasajeros con vuelos en los próximos 3 dias...");
 System.out.println("Hora actual: " + ahora);
 
-//listadeVuelos.stream()
-//		// Corregimos la comparación uniendo la fecha y la hora del vuelo
-//		.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
-//				&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusDays(3)))
-//
-//		// Aplanamos la lista de pasajeros
-//		.flatMap(vuelo -> vuelo.getPasajeros().stream())
-//
-//		// Y finalmente 'enviamos' el mensaje
-//		.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
-//				+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
+listadeVuelos.stream()
+		// Corregimos la comparación uniendo la fecha y la hora del vuelo
+		.filter(vuelo -> LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isAfter(ahora)
+				&& LocalDateTime.of(vuelo.getFechaSalida(), vuelo.getHoraSalida()).isBefore(ahora.plusDays(3)))
+		.peek(vuelo -> System.out.println("Vuelo destino a: " + vuelo.getDestino()))
+		
+		// Aplanamos la lista de pasajeros    
+		.flatMap(vuelo -> vuelo.getPasajeros().stream())
 
-//vuelosCompletos.stream().filter(v -> v.getFechaSalida().isEqual(LocalDate.now()) &&
-//		ChronoUnit.HOURS.between(v.getHoraSalida(), ahora)
+		// Y finalmente 'enviamos' el mensaje
+		.forEach(pasajero -> System.out.println("Mensaje enviado a " + pasajero.nombre() + " "
+				+ pasajero.primerApellido() + ": Su vuelo está programado para salir pronto. ¡Prepárese!"));
 
 
 		//Punto 15
